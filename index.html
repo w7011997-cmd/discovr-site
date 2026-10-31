@@ -229,7 +229,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     });
   }
   try {
-    var c = JSON.parse(localStorage.getItem('sniperUpdated') || 'null');
+    var c = JSON.parse(localStorage.getItem('sniperUpdated2') || 'null');
     if (c && Date.now() - c.t < 600000) { show(c.text); return; }
   } catch (e) {}
   fetch('https://api.github.com/repos/w7011997-cmd/sniper-downloads/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
@@ -238,9 +238,9 @@ document.getElementById('yr').textContent = new Date().getFullYear();
       var a = (rel.assets || []).filter(function (x) { return x.name === 'sniper.apk'; })[0];
       if (!a) return;
       var d = new Date(a.updated_at);
-      var text = 'Last updated: ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) +
+      var text = 'Last updated: ' + d.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) +
         (a.size ? ' \u00b7 ' + Math.round(a.size / 1048576) + ' MB' : '');
-      try { localStorage.setItem('sniperUpdated', JSON.stringify({ t: Date.now(), text: text })); } catch (e) {}
+      try { localStorage.setItem('sniperUpdated2', JSON.stringify({ t: Date.now(), text: text })); } catch (e) {}
       show(text);
     })
     .catch(function () {});
