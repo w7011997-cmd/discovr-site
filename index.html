@@ -210,5 +210,41 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   }catch(e){}
 })();
 </script>
+<!-- sniper-updated -->
+<script>
+(function () {
+  var links = document.querySelectorAll('a[href*="sniper.apk"]');
+  if (!links.length) return;
+  function show(text) {
+    var seen = [];
+    links.forEach(function (l) {
+      var box = l.parentElement;
+      if (!box || seen.indexOf(box) > -1) return;
+      seen.push(box);
+      var p = document.createElement('p');
+      p.className = 'app-updated';
+      p.style.cssText = 'margin:10px 0 0;font-size:13px;color:#9b93b3';
+      p.textContent = text;
+      box.insertAdjacentElement('afterend', p);
+    });
+  }
+  try {
+    var c = JSON.parse(localStorage.getItem('sniperUpdated') || 'null');
+    if (c && Date.now() - c.t < 600000) { show(c.text); return; }
+  } catch (e) {}
+  fetch('https://api.github.com/repos/w7011997-cmd/sniper-downloads/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (rel) {
+      var a = (rel.assets || []).filter(function (x) { return x.name === 'sniper.apk'; })[0];
+      if (!a) return;
+      var d = new Date(a.updated_at);
+      var text = 'Last updated: ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) +
+        (a.size ? ' \u00b7 ' + Math.round(a.size / 1048576) + ' MB' : '');
+      try { localStorage.setItem('sniperUpdated', JSON.stringify({ t: Date.now(), text: text })); } catch (e) {}
+      show(text);
+    })
+    .catch(function () {});
+})();
+</script>
 </body>
 </html>

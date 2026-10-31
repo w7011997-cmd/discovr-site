@@ -129,7 +129,7 @@ footer{padding:34px 0 46px;border-top:1px solid var(--border);color:var(--muted)
         <h2>Sniper</h2>
         <span class="badge">Free, no betting</span>
         <p>Online snooker with global and country rankings, live matches and chat. Find an opponent, play a match and climb the ranks.</p>
-        <div class="cta"><a class="btn" href="/downloads/sniper.apk" download="Sniper.apk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/></svg> Download</a> <a class="btn ghost" href="/sniper/">Details</a></div>
+        <div class="cta"><a class="btn" href="https://github.com/w7011997-cmd/sniper-downloads/releases/latest/download/sniper.apk"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/></svg> Download</a> <a class="btn ghost" href="/sniper/">Details</a></div>
       </div>
     </div>
     <p class="meta">Android only for now. Android may show a warning because the app is not from the Play Store. That is expected, so only download it from here.</p>
@@ -141,5 +141,41 @@ footer{padding:34px 0 46px;border-top:1px solid var(--border);color:var(--muted)
   </footer>
 </div>
 <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+<!-- sniper-updated -->
+<script>
+(function () {
+  var links = document.querySelectorAll('a[href*="sniper.apk"]');
+  if (!links.length) return;
+  function show(text) {
+    var seen = [];
+    links.forEach(function (l) {
+      var box = l.parentElement;
+      if (!box || seen.indexOf(box) > -1) return;
+      seen.push(box);
+      var p = document.createElement('p');
+      p.className = 'app-updated';
+      p.style.cssText = 'margin:10px 0 0;font-size:13px;color:#9b93b3';
+      p.textContent = text;
+      box.insertAdjacentElement('afterend', p);
+    });
+  }
+  try {
+    var c = JSON.parse(localStorage.getItem('sniperUpdated') || 'null');
+    if (c && Date.now() - c.t < 600000) { show(c.text); return; }
+  } catch (e) {}
+  fetch('https://api.github.com/repos/w7011997-cmd/sniper-downloads/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (rel) {
+      var a = (rel.assets || []).filter(function (x) { return x.name === 'sniper.apk'; })[0];
+      if (!a) return;
+      var d = new Date(a.updated_at);
+      var text = 'Last updated: ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) +
+        (a.size ? ' \u00b7 ' + Math.round(a.size / 1048576) + ' MB' : '');
+      try { localStorage.setItem('sniperUpdated', JSON.stringify({ t: Date.now(), text: text })); } catch (e) {}
+      show(text);
+    })
+    .catch(function () {});
+})();
+</script>
 </body>
 </html>
